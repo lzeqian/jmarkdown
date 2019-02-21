@@ -31,13 +31,14 @@ public class ParserConfigration {
         paramMap.put("2","innerText");
         paramMap.put("3","suffixText");
         paramMap.put("4","lineSep");
-        mdParserList.add(RegexParserBuilder.builder("(.*)==(.+)==(.*)("+System.lineSeparator()+")",paramMap,"${preText}<mark>${innerText}</mark>${suffixText}"+System.lineSeparator()));
-//        paramMap=new HashMap<>();
-//        paramMap.put("1","preText");
-//        paramMap.put("2","innerText");
-//        paramMap.put("3","suffixText");
-//        //*强调文本* _强调文本_
-//        mdParserList.add(RegexParserBuilder.builder("(.*)\\*(.+)\\*(.*\r\n)",paramMap,"${preText}<mark>${innerText}</mark>${suffixText}"));
+        mdParserList.add(RegexParserBuilder.builder("(.*)==(.+)==(.*|.*"+System.lineSeparator()+")",paramMap,"${preText}<mark>${innerText}</mark>${suffixText}"+System.lineSeparator()));
+        paramMap=new HashMap<>();
+        paramMap.put("1","preText");
+        paramMap.put("2","innerText");
+        paramMap.put("3","suffixText");
+        //*强调文本* _强调文本_
+        mdParserList.add(RegexParserBuilder.builder("(.*)_(.+)_(.*|.*"+System.lineSeparator()+")",paramMap,"${preText}<em>${innerText}</em>${suffixText}"));
+        mdParserList.add(RegexParserBuilder.builder("(.*)\\*(.+)\\*(.*|.*"+System.lineSeparator()+")",paramMap,"${preText}<em>${innerText}</em>${suffixText}"));
 
     }
     public static void addParser(StartEndParser mp){

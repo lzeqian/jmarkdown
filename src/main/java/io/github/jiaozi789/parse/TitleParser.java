@@ -34,9 +34,15 @@ public abstract class TitleParser extends StartEndParser {
     public boolean ifMatch(MarkDownReader reader) {
         try {
             String string = reader.readChar(reader.getCurRowStartIdx(), reader.getCurRowEndIdx());
-            if(string.trim().startsWith(startChar()) && string.endsWith(endChar())){
-                return true;
+            if(reader.isLastRow()){
+                if( string.trim().startsWith(startChar()))
+                    return true;
+            }else{
+                if(string.trim().startsWith(startChar()) && string.endsWith(endChar())){
+                    return true;
+                }
             }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -53,7 +59,12 @@ public abstract class TitleParser extends StartEndParser {
             String string = reader.readChar(reader.getCurRowStartIdx(), reader.getCurRowEndIdx());
             Title title=new Title();
             title.setLevel(level());
-            String innerText=string.substring(startChar().length(),string.length()-endChar().length());
+            String innerText=null;
+            if(reader.isLastRow()){
+                innerText=string.substring(startChar().length());
+            }else{
+                innerText=string.substring(startChar().length(),string.length()-endChar().length());
+            }
             title.setInnerText(innerText);
             String replaceText=FtlUtils.genernate("/title.ftl",title)+endChar();
             return replaceText;

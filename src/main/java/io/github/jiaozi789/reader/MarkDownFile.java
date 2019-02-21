@@ -37,7 +37,8 @@ public class MarkDownFile {
             //每一换行都需要加 <br/> +\r\r
             try {
                 String string = markDownReader.readChar(markDownReader.getCurRowStartIdx(), markDownReader.getCurRowEndIdx());
-                markDownReader.replaceCurRow(string.trim()+"<br/>"+System.lineSeparator());
+                //最后一行不需要\r\n
+                markDownReader.replaceCurRow(string.trim()+"<br/>"+(markDownReader.isLastRow()?"":System.lineSeparator()));
             } catch (Exception e) {
                 e.printStackTrace();
             }
