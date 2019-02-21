@@ -55,7 +55,7 @@ public abstract class TitleParser extends StartEndParser {
             title.setLevel(level());
             String innerText=string.substring(startChar().length(),string.length()-endChar().length());
             title.setInnerText(innerText);
-            String replaceText=FtlUtils.genernate("/title.ftl",title)+string.substring(string.length()-endChar().length());
+            String replaceText=FtlUtils.genernate("/title.ftl",title)+endChar();
             return replaceText;
         } catch (Exception e) {
             e.printStackTrace();

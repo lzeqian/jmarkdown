@@ -28,12 +28,18 @@ public class MarkDownFile {
     public String process() throws IOException {
         String line=null;
         while((line=markDownReader.readMdLine())!=null){
-
             for (MarkDownParser mdParser: ParserConfigration.mdParserList) {
                 if(mdParser.ifMatch(markDownReader)){
                     line=mdParser.replace(markDownReader);
                     markDownReader.replaceCurRow(line);
                 }
+            }
+            //每一换行都需要加 <br/> +\r\r
+            try {
+                String string = markDownReader.readChar(markDownReader.getCurRowStartIdx(), markDownReader.getCurRowEndIdx());
+                markDownReader.replaceCurRow(string.trim()+"<br/>"+System.lineSeparator());
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
         return markDownReader.getTargetHtml();
