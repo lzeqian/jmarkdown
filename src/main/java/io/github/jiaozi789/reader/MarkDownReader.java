@@ -6,25 +6,57 @@ import java.io.*;
 import java.nio.charset.Charset;
 
 /**
- * Md输入流构建类
+ * markdown文件是文本文件，用于编写脚本 不会特别大
+ * Md输入流构建类 一次性加载 内存操作
  * @Author 廖敏
  * @Date 2019-02-20 10:22
  **/
 public class MarkDownReader extends BufferedReader {
     public static final String CHARSET="UTF-8";
+    /**
+     * 当前读取数据的坐标
+     */
     private int curIndex=-1;
+    /**
+     * 当前行的开始的下标 包含
+     */
+    private int curRowStartIdx=-1;
+    /**
+     * 当前行的结束的下标 不包含
+     */
+    private int curRowEndIdx=-1;
+    /**
+     * 当前行的索引 从0开始
+     */
+    private int curRowIdx=-1;
+    /**
+     * 是否是第一行
+     */
+    private boolean firstRow=false;
+    /**
+     * 是否是最后一行
+     */
+    private boolean lastRow=false;
+    /**
+     * 总行数
+     */
+    private int rowLength=0;
     private StringBuffer sb;
-    public MarkDownReader(InputStream in) {
+    public MarkDownReader(InputStream in,Charset charset) {
         super(new InputStreamReader(in, Charset.forName(CHARSET)));
         sb=new StringBuffer();
         try {
             sb.append(ReaderUtils.readAll(in));
+            rowLength=ReaderUtils.findCount(sb.toString(),System.lineSeparator())+1;
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+    public MarkDownReader(InputStream in) {
+        this(in,Charset.forName(CHARSET));
+    }
 
-    public String[] prevMdLine(int line){
+    public String[] prevMdLine(int line) throws Exception {
         String[] lines=new String[line];
         for (int i = 0; i <line ; i++) {
             lines[i]=prevMdLine();
@@ -35,25 +67,35 @@ public class MarkDownReader extends BufferedReader {
      * 读取上一行
      * @return
      */
-    public String prevMdLine(){
+    public String prevMdLine() throws Exception {
         if(curIndex==-1){
             return null;
         }
         String lineSeparator = System.lineSeparator();
-        int index=ReaderUtils.retFind(sb.toString(),curIndex-2,lineSeparator);
-
-        //第一行
+        //找到上一个\r\n
+        //最后一行没有 /r/n
+        int index=-1;
+        if(isLastRow()){
+            index=ReaderUtils.retFind(sb.toString(),curIndex,lineSeparator);
+        }else{
+            index=ReaderUtils.retFind(sb.toString(),curIndex-2,lineSeparator);
+        }
+        //上面没有\r\n已经是第一行 所以直接报错 没有上一行了
         if(index==-1){
-            curIndex=-1;
-            return sb.substring(0,curIndex+1);
-
+            throw new Exception("目前是第一行 无法再往前");
         }
         //不是第一行
         else{
-            int index1=ReaderUtils.retFind(sb.toString(),index-1,lineSeparator);
-            curIndex=index1+1;
-            return sb.substring(index1+2,index);
-
+            curIndex=index+1;
+            curRowEndIdx=curIndex+1;
+            int index2=ReaderUtils.retFind(sb.toString(),index-1,lineSeparator);
+            if(index2==-1){
+                curRowStartIdx=0;
+            }else{
+                curRowStartIdx=index2+2;
+            }
+            curRowIdx--;
+            return sb.substring(curRowStartIdx,curRowEndIdx);
         }
     }
 
@@ -73,6 +115,7 @@ public class MarkDownReader extends BufferedReader {
             return null;
         }
         curIndex++;
+        curRowStartIdx=curIndex;
         String lineSeparator = System.lineSeparator();
         int index=ReaderUtils.find(sb.toString(),curIndex,lineSeparator);
         String rtnString=null;
@@ -84,14 +127,40 @@ public class MarkDownReader extends BufferedReader {
             rtnString = sb.substring(curIndex, index) + lineSeparator;
             curIndex = (index + lineSeparator.length() - 1);
         }
+        curRowEndIdx=curIndex+1;
+        curRowIdx++;
         return rtnString;
+    }
+    public void replaceCurRow(String replaceText){
+        int sidx=this.getCurRowStartIdx();
+        int seidx=this.getCurRowEndIdx();
+        sb.delete(sidx,seidx);
+        sb.insert(sidx,replaceText);
+        this.curRowEndIdx=sidx+replaceText.length();
+        this.curIndex=this.curRowEndIdx-1;
     }
     public int length(){
         return sb.length();
     }
+    public int getRowLength(){
+        return rowLength;
+    }
     public int getCurIndex(){
         return curIndex;
     }
+    public int getCurRowStartIdx(){
+        return curRowStartIdx;
+    }
+    public int getCurRowEndIdx(){
+        return curRowEndIdx;
+    }
+    public boolean isFirstRow() {
+        return curRowIdx==0;
+    }
+    public boolean isLastRow() {
+        return curRowIdx==rowLength-1;
+    }
+    public String getTargetHtml(){return this.sb.toString();}
     /**
      * 从当前位置继续读取下一个字符
      * @return 下一个字符

@@ -29,10 +29,23 @@ public class FtlUtils {
      */
     public static String genernate(String templateName,Object root) throws Exception {
         Template temp = cfg.getTemplate(templateName);
+        return genernate(temp,root);
+    }
+    public static String genernate(Template temp,Object root) throws Exception {
         ByteArrayOutputStream baos=new ByteArrayOutputStream();
         Writer out = new OutputStreamWriter(baos);
         temp.process(root, out);
         return new String(baos.toByteArray());
     }
+    public static String genernateByString(String templateStr,Object root) throws Exception {
+        Configuration cfg = new Configuration(Configuration.VERSION_2_3_22);
+        cfg.setTemplateLoader(new StringTemplateLoader(templateStr));
+        Template template = cfg.getTemplate("");
+        ByteArrayOutputStream baos=new ByteArrayOutputStream();
+        Writer out = new OutputStreamWriter(baos);
+        template.process(root, out);
+        return new String(baos.toByteArray());
+    }
+
 
 }

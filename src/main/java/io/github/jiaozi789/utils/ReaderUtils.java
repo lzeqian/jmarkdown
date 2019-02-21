@@ -50,6 +50,29 @@ public class ReaderUtils {
         return -1;
     }
 
+    /**
+     * 找到某个字符串在另一个字符串出现的次数
+     * @param source 源字符串
+     * @param findStr 目标字符串
+     * @return 出现次数
+     */
+    public static int findCount(String source,String findStr){
+        int startIdx=0;
+        int count=0;
+        while(true){
+            int index=find(source,startIdx,findStr);
+            if(index>=0){
+                count++;
+                startIdx=index+findStr.length();
+            }else{
+                break;
+            }
+        }
+        return count;
+    }
+
+
+
     public static void main(String[] args) {
         System.out.println(retFind("aasdfbbbsdf",100,"gg"));
     }

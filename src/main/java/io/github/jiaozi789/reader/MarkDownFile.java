@@ -1,13 +1,16 @@
 package io.github.jiaozi789.reader;
 
-import io.github.jiaozi789.parse.MdParser;
+import io.github.jiaozi789.parse.MarkDownParser;
+import io.github.jiaozi789.parse.RegexParserBuilder;
+import io.github.jiaozi789.parse.StartEndParser;
 import io.github.jiaozi789.parse.TitleFactory;
-import io.github.jiaozi789.utils.ReaderUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Author 廖敏
@@ -16,7 +19,8 @@ import java.util.List;
 public class MarkDownFile {
     private InputStream inputStream;
     private MarkDownReader markDownReader=null;
-    public static List<MdParser> mdParserList=new ArrayList<MdParser>();
+    private StringBuffer targetHtml=new StringBuffer();
+    public static List<MarkDownParser> mdParserList=new ArrayList<MarkDownParser>();
     static{
         for(int i=1;i<=6;i++) {
             try {
@@ -25,76 +29,40 @@ public class MarkDownFile {
                 e.printStackTrace();
             }
         }
+        Map<String,String> paramMap=new HashMap<>();
+        paramMap.put("1","preText");
+        paramMap.put("2","innerText");
+        paramMap.put("3","suffixText");
+        mdParserList.add(RegexParserBuilder.builder("(.*)==(.+)==(.*\r\n)",paramMap,"${preText}<mark>${innerText}</mark>${suffixText}"));
     }
 
     public MarkDownFile(InputStream inputStream) {
         this.inputStream = inputStream;
         markDownReader =new MarkDownReader(inputStream);
-
     }
 
-    public static void addParser(MdParser mp){
+    public static void addParser(StartEndParser mp){
         mdParserList.add(mp);
     }
 
-    /**
-     * 判断某个位置是否是和某个语法相同
-     * @param index
-     * @return
-     */
-    private MdParser ifMarkDownSyntax(int index){
-        for (MdParser mdParser:mdParserList) {
-            int parseLength=mdParser.startChar().length();
-            try {
-                if(index+parseLength<markDownReader.length()) {
-                    String readChar = markDownReader.readLengthChar(index, parseLength);
-                    if (readChar.equals(mdParser.startChar())) {
-                        return mdParser;
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        return null;
-    }
 
     /**
-     *
-     * @param mdParser
-     * @return
+     * 解析md文件
+     * @throws IOException
      */
-    public int getEndIndex(MdParser mdParser){
-        int parseLength=mdParser.endChar().length();
-        for(int start=markDownReader.getCurIndex();;start++){
-
-        }
-    }
-
-    public void processLine() throws IOException {
+    public String process() throws IOException {
         String line=null;
         while((line=markDownReader.readMdLine())!=null){
-            System.out.print(line);
-        }
-    }
-    public void process(){
-        try {
-            markDownReader.readChar();
-            while(!markDownReader.ifEof()){
-                MdParser mdParser=ifMarkDownSyntax(markDownReader.getCurIndex());
-                if(mdParser!=null) {
-                    System.out.println(mdParser);
-                    if (mdParser.startChar().length() > 1) {
-                        markDownReader.skip(mdParser.startChar().length());
-                    }
+
+            for (MarkDownParser mdParser:mdParserList) {
+                if(mdParser.ifMatch(markDownReader)){
+                    line=mdParser.replace(markDownReader);
+                    markDownReader.replaceCurRow(line);
                 }
-                if(!markDownReader.ifEof())
-                    markDownReader.readChar();
             }
 
-        } catch (IOException e) {
-            e.printStackTrace();
         }
+        return markDownReader.getTargetHtml();
     }
 
     public void destroy() throws IOException {
