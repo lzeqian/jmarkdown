@@ -36,9 +36,28 @@ public class ParserConfigration {
         paramMap.put("1","preText");
         paramMap.put("2","innerText");
         paramMap.put("3","suffixText");
+        //**加粗文本** __加粗文本__
+        mdParserList.add(RegexParserBuilder.builder("(.*)\\*\\*(.+)\\*\\*(.*|.*"+System.lineSeparator()+")",paramMap,"${preText}<strong>${innerText}</strong>${suffixText}"));
+        mdParserList.add(RegexParserBuilder.builder("(.*)__(.+)__(.*|.*"+System.lineSeparator()+")",paramMap,"${preText}<strong>${innerText}</strong>${suffixText}"));
+        //~~删除文本~~
+        mdParserList.add(RegexParserBuilder.builder("(.*)~~(.+)~~(.*|.*"+System.lineSeparator()+")",paramMap,"${preText}<s>${innerText}</s>${suffixText}"));
+
         //*强调文本* _强调文本_
         mdParserList.add(RegexParserBuilder.builder("(.*)_(.+)_(.*|.*"+System.lineSeparator()+")",paramMap,"${preText}<em>${innerText}</em>${suffixText}"));
         mdParserList.add(RegexParserBuilder.builder("(.*)\\*(.+)\\*(.*|.*"+System.lineSeparator()+")",paramMap,"${preText}<em>${innerText}</em>${suffixText}"));
+        paramMap=new HashMap<>();
+        paramMap.put("1","preText");
+        paramMap.put("2","atext");
+        paramMap.put("3","href");
+        paramMap.put("4","suffixText");
+        //超链接  [link](https://mp.csdn.net)
+        mdParserList.add(RegexParserBuilder.builder("(.*)\\[(.*)\\]\\((.*)\\)(.*|.*"+System.lineSeparator()+")",paramMap,"${preText}<a href=\"${href}\">${atext}</a>${suffixText}"));
+
+
+
+
+
+
 
     }
     public static void addParser(StartEndParser mp){
