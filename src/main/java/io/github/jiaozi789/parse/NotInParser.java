@@ -56,7 +56,7 @@ public abstract class NotInParser implements MarkDownParser {
     public String replace(MarkDownReader reader) {
         try {
             String string = reader.readChar(reader.getCurRowStartIdx(), reader.getCurRowEndIdx());
-            return string.substring(0,string.length()-System.lineSeparator().length())+appendString();
+            return string.trim()+appendString();
         } catch (Exception e) {
             e.printStackTrace();
         }

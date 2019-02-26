@@ -24,14 +24,45 @@ public class MarkDownFile {
         this.inputStream = inputStream;
         markDownReader =new MarkDownReader(inputStream);
     }
+
+    /**
+     * 有样式的导出
+     * @return
+     * @throws IOException
+     */
+    public String processStyle() throws Exception {
+        String targetHtml=process();
+        StringBuffer sb=new StringBuffer("<!DOCTYPE html>\n" +
+                "<html>\n" +
+                "\n" +
+                "<head>\n" +
+                "  <meta charset=\"utf-8\">\n" +
+                "  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n" +
+                "  <title>csdn_export_md</title>\n" +
+                "  <link rel=\"stylesheet\" href=\"https://stackedit.io/style.css\" />\n" +
+                "</head>\n" +
+                "\n" +
+                "<body class=\"stackedit\">\n" +
+                "  <div class=\"stackedit__html\">");
+        sb.append(targetHtml);
+        sb.append("</div>\n" +
+                "</body>\n" +
+                "\n" +
+                "</html>");
+        return sb.toString();
+    }
     /**
      * 解析md文件
      * @throws IOException
      */
-    public String process() throws IOException {
+    public String process() throws Exception {
         String line=null;
         while((line=markDownReader.readMdLine())!=null){
             List<MarkDownParser> mdpList=new ArrayList<>();
+            String string = markDownReader.readChar(markDownReader.getCurRowStartIdx(), markDownReader.getCurRowEndIdx());
+//            if(string.trim().equals("")){
+//                break;
+//            }
             for (MarkDownParser mdParser: ParserConfigration.mdParserList) {
                 if(mdParser.ifMatch(markDownReader)){
                     line = mdParser.replace(markDownReader);
@@ -54,7 +85,7 @@ public class MarkDownFile {
 
             //每一换行都需要加 <br/> +\r\n
             try {
-                String string = markDownReader.readChar(markDownReader.getCurRowStartIdx(), markDownReader.getCurRowEndIdx());
+                string = markDownReader.readChar(markDownReader.getCurRowStartIdx(), markDownReader.getCurRowEndIdx());
                 //最后一行不需要\r\n
                 markDownReader.replaceCurRow(string.trim()+(markDownReader.isLastRow()?"":System.lineSeparator()));
             } catch (Exception e) {

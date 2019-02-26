@@ -2,6 +2,7 @@ package io.github.jiaozi789.parse;
 
 import io.github.jiaozi789.reader.MarkDownReader;
 import io.github.jiaozi789.utils.StringUtils;
+import io.github.jiaozi789.utils.SystemUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,7 +27,7 @@ public class TableParser extends SeriesMulLineParser {
         Map<Integer, String> regexRule=new HashMap<>();
         regexRule.put(0,"(\\|.+)+\\|$");
         regexRule.put(1,"(\\|.+)+\\|$");
-        return null;
+        return regexRule;
     }
     private int columnCount;
     @Override
@@ -35,7 +36,8 @@ public class TableParser extends SeriesMulLineParser {
             String string = reader.readChar(reader.getCurRowStartIdx(), reader.getCurRowEndIdx());
             //表头行
             if(index==0){
-                columnCount=string.indexOf("|")-1;
+                columnCount=StringUtils.findCount(string,"|")-1;
+                return true;
                 //对齐行
             }else if(index==1){
                 int endIndex= StringUtils.indexOf(string,startChar(),columnCount+1);
@@ -54,7 +56,7 @@ public class TableParser extends SeriesMulLineParser {
                         }
                     }
 
-                    reader.replaceCurRow(string.substring(0,endIndex+1));
+                    reader.replaceCurRow(string.substring(0,endIndex+1)+System.lineSeparator());
                     return true;
                 }
             }else{
@@ -65,9 +67,9 @@ public class TableParser extends SeriesMulLineParser {
                     for(int i=0;i<(columnCount+1-findCount);i++){
                         string=string+"|";
                     }
-                    reader.replaceCurRow(string.substring(0,endIndex+1));
+                    reader.replaceCurRow(string.substring(0,endIndex+1)+System.lineSeparator());
                 }else{
-                    reader.replaceCurRow(string.substring(0,endIndex+1));
+                    reader.replaceCurRow(string.substring(0,endIndex+1)+System.lineSeparator());
                 }
                 return true;
             }

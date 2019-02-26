@@ -12,11 +12,15 @@ import static junit.framework.TestCase.assertEquals;
 
 public class TestTitle {
     @Test
-    public void testSayHello() throws IOException {
+    public void testProcess() throws Exception {
         MarkDownFile mdf=new MarkDownFile(TestTitle.class.getResourceAsStream("/test.md"));
         System.out.println(mdf.process());
     }
-
+    @Test
+    public void testProcessStyle() throws Exception {
+        MarkDownFile mdf=new MarkDownFile(TestTitle.class.getResourceAsStream("/test1.md"));
+        System.out.println(mdf.processStyle());
+    }
     @Test
     public void testReader() throws Exception {
         MarkDownReader mdr=new MarkDownReader(TestTitle.class.getResourceAsStream("/test.md"));
@@ -39,9 +43,7 @@ public class TestTitle {
     }
     @Test
     public void testRegexp(){
-        System.out.println(Pattern.matches(".*==(.+)==(.*\r\n)","==aaa==bb\r\n"));
-
-
+        System.out.println(Pattern.matches("(\\|.+)+\\|$","||:--|"));
     }
 
 }

@@ -48,7 +48,7 @@ public abstract class SeriesMulLineParser extends MulLineParser{
             String string = reader.readChar(reader.getCurRowStartIdx(), reader.getCurRowEndIdx());
             if(string.trim().startsWith(startChar())){
                 String line=null;
-                if(!SystemUtils.match(regex(),rowIndex,string) && !check(rowIndex,reader)){
+                if(!SystemUtils.match(regex(),rowIndex,string.trim())  ||  !check(rowIndex,reader)){
                     return false;
                 }
                 blockStartIdx=reader.getCurRowStartIdx();
@@ -56,7 +56,7 @@ public abstract class SeriesMulLineParser extends MulLineParser{
                     rowIndex++;
                     //如果当前行是连续行，必须还要检查子类的检查函数和重写的正则
                     if(line.trim().startsWith(startChar())) {
-                        if (!SystemUtils.match(regex(), rowIndex, string) && !check(rowIndex, reader)) {
+                        if (!SystemUtils.match(regex(), rowIndex, line.trim()) || !check(rowIndex, reader)) {
                             return false;
                         }
                     }
