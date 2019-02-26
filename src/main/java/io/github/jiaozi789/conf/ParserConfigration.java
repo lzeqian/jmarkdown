@@ -1,9 +1,6 @@
 package io.github.jiaozi789.conf;
 
-import io.github.jiaozi789.parse.MarkDownParser;
-import io.github.jiaozi789.parse.RegexParserBuilder;
-import io.github.jiaozi789.parse.StartEndParser;
-import io.github.jiaozi789.parse.TitleFactory;
+import io.github.jiaozi789.parse.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -52,7 +49,7 @@ public class ParserConfigration {
         paramMap.put("4","suffixText");
         //超链接  [link](https://mp.csdn.net)
         mdParserList.add(RegexParserBuilder.builder("(.*)\\[(.*)\\]\\((.*)\\)(.*|.*"+System.lineSeparator()+")",paramMap,"${preText}<a href=\"${href}\">${atext}</a>${suffixText}"));
-
+        mdParserList.add(new RefParser());
 
 
 

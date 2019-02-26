@@ -1,6 +1,7 @@
 package io.github.jiaozi789.reader;
 
 import io.github.jiaozi789.utils.ReaderUtils;
+import io.github.jiaozi789.utils.StringUtils;
 
 import java.io.*;
 import java.nio.charset.Charset;
@@ -47,7 +48,7 @@ public class MarkDownReader extends BufferedReader {
         sb=new StringBuffer();
         try {
             sb.append(ReaderUtils.readAll(in));
-            rowLength=ReaderUtils.findCount(sb.toString(),System.lineSeparator())+1;
+            rowLength=StringUtils.findCount(sb.toString(),System.lineSeparator())+1;
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -76,9 +77,9 @@ public class MarkDownReader extends BufferedReader {
         //最后一行没有 /r/n
         int index=-1;
         if(isLastRow()){
-            index=ReaderUtils.retFind(sb.toString(),curIndex,lineSeparator);
+            index= StringUtils.retFind(sb.toString(),curIndex,lineSeparator);
         }else{
-            index=ReaderUtils.retFind(sb.toString(),curIndex-2,lineSeparator);
+            index=StringUtils.retFind(sb.toString(),curIndex-2,lineSeparator);
         }
         //上面没有\r\n已经是第一行 所以直接报错 没有上一行了
         if(index==-1){
@@ -88,7 +89,7 @@ public class MarkDownReader extends BufferedReader {
         else{
             curIndex=index+1;
             curRowEndIdx=curIndex+1;
-            int index2=ReaderUtils.retFind(sb.toString(),index-1,lineSeparator);
+            int index2=StringUtils.retFind(sb.toString(),index-1,lineSeparator);
             if(index2==-1){
                 curRowStartIdx=0;
             }else{
@@ -117,7 +118,7 @@ public class MarkDownReader extends BufferedReader {
         curIndex++;
         curRowStartIdx=curIndex;
         String lineSeparator = System.lineSeparator();
-        int index=ReaderUtils.find(sb.toString(),curIndex,lineSeparator);
+        int index=StringUtils.find(sb.toString(),curIndex,lineSeparator);
         String rtnString=null;
         //最后一行
         if(index==-1){
@@ -131,13 +132,16 @@ public class MarkDownReader extends BufferedReader {
         curRowIdx++;
         return rtnString;
     }
-    public void replaceCurRow(String replaceText){
-        int sidx=this.getCurRowStartIdx();
-        int seidx=this.getCurRowEndIdx();
+    public void replaceByLoc(int sidx,int seidx,String replaceText){
         sb.delete(sidx,seidx);
         sb.insert(sidx,replaceText);
         this.curRowEndIdx=sidx+replaceText.length();
         this.curIndex=this.curRowEndIdx-1;
+    }
+    public void replaceCurRow(String replaceText){
+        int sidx=this.getCurRowStartIdx();
+        int seidx=this.getCurRowEndIdx();
+        replaceByLoc(sidx,seidx,replaceText);
     }
     public int length(){
         return sb.length();
@@ -151,6 +155,15 @@ public class MarkDownReader extends BufferedReader {
     public int getCurRowStartIdx(){
         return curRowStartIdx;
     }
+
+    public void setCurRowStartIdx(int curRowStartIdx) {
+        this.curRowStartIdx = curRowStartIdx;
+    }
+
+    public void setCurRowEndIdx(int curRowEndIdx) {
+        this.curRowEndIdx = curRowEndIdx;
+    }
+
     public int getCurRowEndIdx(){
         return curRowEndIdx;
     }

@@ -30,15 +30,20 @@ public class MarkDownFile {
         while((line=markDownReader.readMdLine())!=null){
             for (MarkDownParser mdParser: ParserConfigration.mdParserList) {
                 if(mdParser.ifMatch(markDownReader)){
-                    line=mdParser.replace(markDownReader);
-                    markDownReader.replaceCurRow(line);
+                    line = mdParser.replace(markDownReader);
+                    if(mdParser instanceof MulLineParser){
+                        MulLineParser mp=(MulLineParser)mdParser;
+                        markDownReader.replaceByLoc(mp.getBlockStartIdx(),mp.getBlockEndIdx(),line);
+                    }else {
+                        markDownReader.replaceCurRow(line);
+                    }
                 }
             }
-            //每一换行都需要加 <br/> +\r\r
+            //每一换行都需要加 <br/> +\r\n
             try {
                 String string = markDownReader.readChar(markDownReader.getCurRowStartIdx(), markDownReader.getCurRowEndIdx());
                 //最后一行不需要\r\n
-                markDownReader.replaceCurRow(string.trim()+"<br/>"+(markDownReader.isLastRow()?"":System.lineSeparator()));
+                markDownReader.replaceCurRow(string.trim()+(markDownReader.isLastRow()?"":System.lineSeparator()));
             } catch (Exception e) {
                 e.printStackTrace();
             }
