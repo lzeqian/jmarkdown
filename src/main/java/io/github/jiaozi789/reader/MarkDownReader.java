@@ -53,6 +53,12 @@ public class MarkDownReader extends BufferedReader {
             e.printStackTrace();
         }
     }
+    public MarkDownReader(String text){
+        super(new InputStreamReader(new ByteArrayInputStream(new byte[]{}), Charset.forName(CHARSET)));
+        sb=new StringBuffer();
+        sb.append(text);
+        rowLength=StringUtils.findCount(sb.toString(),System.lineSeparator())+1;
+    }
     public MarkDownReader(InputStream in) {
         this(in,Charset.forName(CHARSET));
     }
@@ -173,6 +179,11 @@ public class MarkDownReader extends BufferedReader {
     public boolean isLastRow() {
         return curRowIdx==rowLength-1;
     }
+
+    public int getCurRowIdx() {
+        return curRowIdx;
+    }
+
     public String getTargetHtml(){return this.sb.toString();}
     /**
      * 从当前位置继续读取下一个字符

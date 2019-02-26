@@ -93,8 +93,20 @@ public class StringUtils {
     public static String rtrim(String str){
         return str.replaceAll("\\s+$","");
     }
+    public static int indexOf(String src,String dest,int count) {
+        int curIndex = 0;
+        int rcount=1;
+        while ((curIndex = src.indexOf(dest, curIndex)) != -1) {
+            if(rcount==count){
+                return curIndex;
+            }
+            curIndex=curIndex+dest.length();
+            rcount++;
+        }
+        return -1;
+    }
     public static void main(String[] args) {
-        String string=rtrim("   hello   ");
-        System.out.println(string);
+        int index=indexOf("hello_dd_dfdf_ccc","_",4);
+        System.out.println(index);
     }
 }

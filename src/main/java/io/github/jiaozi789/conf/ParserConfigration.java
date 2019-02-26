@@ -1,6 +1,7 @@
 package io.github.jiaozi789.conf;
 
 import io.github.jiaozi789.parse.*;
+import io.github.jiaozi789.reader.MarkDownReader;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,6 +13,21 @@ import java.util.Map;
  * @Date 2019-02-21 15:49
  **/
 public class ParserConfigration {
+    /**
+     * 字符串是否匹配定义的解析规则
+     * @param line 判断字符串
+     * @return 是否匹配
+     */
+    public static List<MarkDownParser> match(String line){
+        MarkDownReader markDownReader=new MarkDownReader(line);
+        List<MarkDownParser> mdps=new ArrayList<>();
+        for (MarkDownParser mdParser: ParserConfigration.mdParserList) {
+            if(mdParser.ifMatch(markDownReader)){
+                mdps.add(mdParser);
+            }
+        }
+        return mdps;
+    }
     public static List<MarkDownParser> mdParserList=new ArrayList<MarkDownParser>();
     static{
         // 支持 标题1到标题6
@@ -50,7 +66,7 @@ public class ParserConfigration {
         //超链接  [link](https://mp.csdn.net)
         mdParserList.add(RegexParserBuilder.builder("(.*)\\[(.*)\\]\\((.*)\\)(.*|.*"+System.lineSeparator()+")",paramMap,"${preText}<a href=\"${href}\">${atext}</a>${suffixText}"));
         mdParserList.add(new RefParser());
-
+        mdParserList.add(new TableParser());
 
 
 

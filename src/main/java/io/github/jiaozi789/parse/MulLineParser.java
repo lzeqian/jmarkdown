@@ -28,7 +28,7 @@ public abstract class MulLineParser extends StartEndParser{
     public boolean ifMatch(MarkDownReader reader) {
         try {
             String string = reader.readChar(reader.getCurRowStartIdx(), reader.getCurRowEndIdx());
-            if(string.trim().startsWith(">")){
+            if(string.trim().startsWith(startChar())){
                 blockStartIdx=reader.getCurRowStartIdx();
                 String line=null;
                 while((line=reader.readMdLine())!=null){

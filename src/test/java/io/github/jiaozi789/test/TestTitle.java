@@ -29,8 +29,8 @@ public class TestTitle {
     }
     @Test
     public void testRegexGroup(){
-        Pattern pattern = Pattern.compile("^(.+)@(.+)");
-        Matcher matcher = pattern.matcher("saa@bb.com");
+        Pattern pattern = Pattern.compile("^\\|(.+\\|)+$");
+        Matcher matcher = pattern.matcher("|aaa|bbbb|cccc|");
 
         if (matcher.find()) {
             for(int i=0;i<matcher.groupCount();i++)
