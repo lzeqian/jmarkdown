@@ -60,7 +60,8 @@ public abstract class RegexParser implements   MarkDownParser{
             String string = reader.readChar(reader.getCurRowStartIdx(), reader.getCurRowEndIdx());
             Pattern pattern = Pattern.compile(regex());
             Matcher matcher = pattern.matcher(string);
-            if (matcher.find()) {
+
+            if (Pattern.matches(regex(),string) && matcher.find()) {
                 for(int i=0;i<matcher.groupCount();i++) {
                     String key = groupMapping().get(i+1 + "");
                     map.put(key, matcher.group(i+1));

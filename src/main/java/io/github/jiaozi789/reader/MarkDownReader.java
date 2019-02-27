@@ -219,7 +219,7 @@ public class MarkDownReader extends BufferedReader {
      */
     public String readChar(int offsetStart,int offsetEnd) throws Exception {
         if(offsetStart>offsetEnd)
-            throw new Exception("开始位置必须《=结束位置");
+            throw new Exception("开始位置必须"+offsetStart+"《=结束位置"+offsetEnd);
         if(offsetEnd<=sb.length()){
             return sb.substring(offsetStart,offsetEnd);
         }

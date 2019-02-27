@@ -105,6 +105,22 @@ public class StringUtils {
         }
         return -1;
     }
+
+    /**
+     * 判断某个字符串是否为空
+     * @param obj
+     * @return
+     */
+    public static boolean isEmpty(Object obj){
+        if(obj==null){
+            return true;
+        }else{
+            if(obj.toString()==null || "".equals(obj.toString())){
+                return true;
+            }
+        }
+        return false;
+    }
     public static void main(String[] args) {
         int index=indexOf("hello_dd_dfdf_ccc","_",4);
         System.out.println(index);

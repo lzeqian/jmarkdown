@@ -55,19 +55,29 @@ public class ParserConfigration {
         //~~删除文本~~
         mdParserList.add(RegexParserBuilder.builder("(.*)~~(.+)~~(.*|.*"+System.lineSeparator()+")",paramMap,"${preText}<s>${innerText}</s>${suffixText}"));
 
-        //*强调文本* _强调文本_
-        mdParserList.add(RegexParserBuilder.builder("(.*)_(.+)_(.*|.*"+System.lineSeparator()+")",paramMap,"${preText}<em>${innerText}</em>${suffixText}"));
-        mdParserList.add(RegexParserBuilder.builder("(.*)\\*(.+)\\*(.*|.*"+System.lineSeparator()+")",paramMap,"${preText}<em>${innerText}</em>${suffixText}"));
+
+
         paramMap=new HashMap<>();
         paramMap.put("1","preText");
         paramMap.put("2","atext");
         paramMap.put("3","href");
         paramMap.put("4","suffixText");
+        mdParserList.add(RegexParserBuilder.builder("(.*)\\!\\[(.*)\\]\\((.*)\\)(.*|.*"+System.lineSeparator()+")",paramMap,"${preText}<img src=\"${href}\" alt=\"${atext}\">${suffixText}"));
         //超链接  [link](https://mp.csdn.net)
         mdParserList.add(RegexParserBuilder.builder("(.*)\\[(.*)\\]\\((.*)\\)(.*|.*"+System.lineSeparator()+")",paramMap,"${preText}<a href=\"${href}\">${atext}</a>${suffixText}"));
+
         mdParserList.add(new RefParser());
         mdParserList.add(new TableParser());
-
+        mdParserList.add(new CodeParser());
+        paramMap=new HashMap<>();
+        paramMap.put("1","preText");
+        paramMap.put("2","innerText");
+        paramMap.put("3","suffixText");
+        //*强调文本* _强调文本_
+        //mdParserList.add(RegexParserBuilder.builder("(.*)_(.+)_(.*|.*"+System.lineSeparator()+")",paramMap,"${preText}<em>${innerText}</em>${suffixText}"));
+        //mdParserList.add(RegexParserBuilder.builder("(.*)\\*(.+)\\*(.*|.*"+System.lineSeparator()+")",paramMap,"${preText}<em>${innerText}</em>${suffixText}"));
+        mdParserList.add(RegexParserBuilder.builder("(?!.*\".*_.+_.*\"(?:.*|.*"+System.lineSeparator()+"))(?:(.*)_(.+)_(.*|.*"+System.lineSeparator()+"))",paramMap,"${preText}<em>${innerText}</em>${suffixText}"));
+        mdParserList.add(RegexParserBuilder.builder("(?!.*\".*\\*.+\\*.*\"(?:.*|.*"+System.lineSeparator()+"))(?:(.*)\\*(.+)\\*(.*|.*"+System.lineSeparator()+"))",paramMap,"${preText}<em>${innerText}</em>${suffixText}"));
 
 
 

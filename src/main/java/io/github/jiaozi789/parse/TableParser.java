@@ -155,6 +155,6 @@ public class TableParser extends SeriesMulLineParser {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return targetHtml.toString();
+        return targetHtml.toString()+System.lineSeparator();
     }
 }

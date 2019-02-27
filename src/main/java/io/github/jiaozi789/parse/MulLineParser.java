@@ -13,6 +13,32 @@ import lombok.Data;
 public abstract class MulLineParser extends StartEndParser{
     protected int blockStartIdx;
     protected int blockEndIdx;
+    @Deprecated
+    public MulLineParser builder(String startChar,String endChar,String replaceContent){
+        return new MulLineParser() {
+            @Override
+            public String endChar() {
+                return endChar;
+            }
+
+            @Override
+            public String startChar() {
+                return startChar;
+            }
+
+            @Override
+            public String replace(MarkDownReader reader) {
+                try {
+                    String str = reader.readChar(super.blockStartIdx, super.blockEndIdx);
+                    String innerHtml=str.substring(startChar.length(),endChar.length());
+                    reader.replaceByLoc(super.blockStartIdx,super.blockEndIdx,replaceContent);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+        };
+    }
 
     @Override
     public String name() {

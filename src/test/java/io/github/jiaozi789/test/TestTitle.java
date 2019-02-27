@@ -33,17 +33,18 @@ public class TestTitle {
     }
     @Test
     public void testRegexGroup(){
-        Pattern pattern = Pattern.compile("^\\|(.+\\|)+$");
-        Matcher matcher = pattern.matcher("|aaa|bbbb|cccc|");
-
-        if (matcher.find()) {
+        Pattern pattern = Pattern.compile("(?!.*\".*_.+_.*\"(?:.*|.*"+System.lineSeparator()+"))(?:(.*)_(.+)_(.*|.*"+System.lineSeparator()+"))");
+        Matcher matcher = pattern.matcher("hello_a_zs");
+        Pattern pattern1 = Pattern.compile("(?!.*\".*_.+_.*\"(.*|.*"+System.lineSeparator()+"))((.*)_(.+)_(.*|.*"+System.lineSeparator()+"))");
+        Matcher matcher1 = pattern1.matcher("\"ttt\"hello_a_zs");
+        if (matcher1.matches() && matcher.find()) {
             for(int i=0;i<matcher.groupCount();i++)
                 System.out.println(matcher.group(i+1));
         }
     }
     @Test
     public void testRegexp(){
-        System.out.println(Pattern.matches("(\\|.+)+\\|$","||:--|"));
+        System.out.println(Pattern.matches("(?!.*\".*_.*\".*)(.*_.*)","aa\"a_b\"vv"));
     }
 
 }

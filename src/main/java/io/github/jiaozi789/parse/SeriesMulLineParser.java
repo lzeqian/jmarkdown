@@ -1,12 +1,9 @@
 package io.github.jiaozi789.parse;
 
 import io.github.jiaozi789.reader.MarkDownReader;
-import io.github.jiaozi789.utils.StringUtils;
 import io.github.jiaozi789.utils.SystemUtils;
 
-import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 /**
  * 连续行都以某个字符开始 比如表格的 |

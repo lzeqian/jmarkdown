@@ -2,6 +2,7 @@ package io.github.jiaozi789.reader;
 
 import io.github.jiaozi789.conf.ParserConfigration;
 import io.github.jiaozi789.parse.*;
+import io.github.jiaozi789.utils.StringUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -60,23 +61,27 @@ public class MarkDownFile {
         while((line=markDownReader.readMdLine())!=null){
             List<MarkDownParser> mdpList=new ArrayList<>();
             String string = markDownReader.readChar(markDownReader.getCurRowStartIdx(), markDownReader.getCurRowEndIdx());
-//            if(string.trim().equals("")){
-//                break;
-//            }
+            if(string.trim().equals("")){
+                continue;
+            }
+            boolean ifMulti=false;
             for (MarkDownParser mdParser: ParserConfigration.mdParserList) {
                 if(mdParser.ifMatch(markDownReader)){
                     line = mdParser.replace(markDownReader);
-                    mdpList.add(mdParser);
-                    if(mdParser instanceof MulLineParser){
-                        MulLineParser mp=(MulLineParser)mdParser;
-                        markDownReader.replaceByLoc(mp.getBlockStartIdx(),mp.getBlockEndIdx(),line);
-                    }else {
-                        markDownReader.replaceCurRow(line);
+                    if(!StringUtils.isEmpty(line)) {
+                        mdpList.add(mdParser);
+                        if (mdParser instanceof MulLineParser) {
+                            MulLineParser mp = (MulLineParser) mdParser;
+                            markDownReader.replaceByLoc(mp.getBlockStartIdx(), mp.getBlockEndIdx(), line);
+                            ifMulti=true;
+                        } else {
+                            markDownReader.replaceCurRow(line);
+                        }
                     }
                 }
             }
             //追加一些特殊解析器必须在得到所有parser集合才能处理
-            NotInParser notInParser=NotInParser.builder(Arrays.asList(RefParser.class,TitleParser.class,TableParser.class),mdpList,"<br/>");
+            NotInParser notInParser=NotInParser.builder(Arrays.asList(RefParser.class,TitleParser.class,TableParser.class,CodeParser.class),mdpList,"<br/>");
             if(notInParser.ifMatch(markDownReader)){
                 line = notInParser.replace(markDownReader);
                 markDownReader.replaceCurRow(line);
@@ -85,9 +90,11 @@ public class MarkDownFile {
 
             //每一换行都需要加 <br/> +\r\n
             try {
-                string = markDownReader.readChar(markDownReader.getCurRowStartIdx(), markDownReader.getCurRowEndIdx());
-                //最后一行不需要\r\n
-                markDownReader.replaceCurRow(string.trim()+(markDownReader.isLastRow()?"":System.lineSeparator()));
+                if(!ifMulti) {
+                    string = markDownReader.readChar(markDownReader.getCurRowStartIdx(), markDownReader.getCurRowEndIdx());
+                    //最后一行不需要\r\n
+                    markDownReader.replaceCurRow(string.trim() + (markDownReader.isLastRow() ? "" : System.lineSeparator()));
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
