@@ -1,5 +1,5 @@
 # mardown解析
-使用java解析markdown文件转换成html代码。
+用java解析markdown文件并转换成html代码。
 >转换的html代码引用了stackedit的css样式。
 
 项目目前支持：
@@ -10,7 +10,7 @@
  - 表格
  
  其他样式正实现中。
- 未完全实现所有不发布release版本到中央仓库。
+ 未完全实现，不发布release版本到中央仓库。
  使用方式：
  ```aidl
     get clone https://github.com/lzeqian/jmarkdown
